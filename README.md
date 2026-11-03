@@ -1,19 +1,48 @@
-# F.CSA313-lab08-mockito_1
+# F.CSA313 — Lab 08: Mockito
 
-## Хэсэг A: Найман тест
-Нийт тест: 10 (7 энгийн тест + A8 параметржүүлсэн тестийн 3 мөр). `mvn test`: Tests run: 10, Failures: 0, Errors: 0, Skipped: 0.
+## Оюутны мэдээлэл
 
-### A8: lenient() хэрэглэсэн шалтгаан
-A8 параметржүүлсэн тестэд мөр бүр өөр stub тохируулдаг тул нэг мөрт ашиглагдаагүй stub үлдэж, Mockito-гийн strict stubs `UnnecessaryStubbingException` шидэх боломжтой. Тиймээс `lenient().when(...)` ашиглан тухайн сценарийд хэрэггүй stub-ыг зөвшөөрсөн.
+- Нэр: **Д.Нурсолтан**
+- Оюутны код: **B232270039**
 
-## Хэсэг B: Тестээ тестлэх — мини мутаци
+## Хөгжүүлэлтийн орчин
 
-| № | Мутаци (src/main дээрх эвдрэл) | Failures | Errors | Унасан тестүүд | Гаралтын файл |
-|---|---|---|---|---|---|
+`java -version` гаралт:
+
+```text
+openjdk version "21.0.12.1" 2026-08-18
+OpenJDK Runtime Environment (build 21.0.12.1+1-1-deb13u1)
+OpenJDK 64-Bit Server VM (build 21.0.12.1+1-1-deb13u1, mixed mode, sharing)
+```
+
+`mvn -version` гаралт:
+
+```text
+Apache Maven 3.9.9
+Maven home: /usr/share/maven
+Java version: 21.0.12.1, vendor: Debian, runtime: /usr/lib/jvm/java-21-openjdk-amd64
+Default locale: en, platform encoding: UTF-8
+OS name: "linux", version: "6.12.113+deb13-amd64", arch: "amd64", family: "unix"
+```
+
+## Хэсэг A: Нэгжийн тест
+
+Нийт тест: **10** (7 энгийн тест + A8-ийн 3 параметржүүлсэн тохиолдол). `results/mvn-test.txt` файлын сүүлийн үр дүн: `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0`; `BUILD SUCCESS`.
+
+### A8: `lenient()` хэрэглэсэн шалтгаан
+
+A8-ийн параметр бүр өөр stub ашигладаг тул тухайн параметрийн хувилбарт бусад stub хэрэглэхгүй үлдэж болно. Mockito-ийн strict stubs ийм unused stub-ыг алдаа гэж үздэг учраас сценарид нөхцөлтэйгээр хэрэглэх stubbing-ийг `lenient()` болгосон.
+
+## Хэсэг B: Мутацийн туршилт
+
+| № | Мутаци | Failures | Errors | Унасан тестүүд | Гаралтын файл |
+|---|---|---:|---:|---|---|
 | 1 | Идэвхгүй оюутны шалгалтыг (`if (!student.active()) ...`) комментлов | 2 | 0 | `register_errorScenarios_returnExpectedCodeWithoutSaveOrEmail`, `register_inactiveStudent_returnsErrorInactiveAndNeverTouchesEmailSender` | `results/mvn-test-mutant-1.txt` |
 | 2 | `repository.saveRegistration(...)` дуудалтыг комментлов | 2 | 0 | `register_activeStudentWithAllPrerequisites_returnsOkSavesAndSendsEmail`, `register_emailSenderThrows_stillReturnsOkAndSavesRegistration` | `results/mvn-test-mutant-2.txt` |
-| 3 | Эхний if-ээс `|| courseId == null` хэсгийг устгав | 1 | 0 | `register_nullArguments_throwsIllegalArgumentAndTouchesNoDependency` | `results/mvn-test-mutant-3.txt` |
+| 3 | Эхний `if` нөхцөлөөс `|| courseId == null` хэсгийг устгав | 1 | 0 | `register_nullArguments_throwsIllegalArgumentAndTouchesNoDependency` | `results/mvn-test-mutant-3.txt` |
 
-**Дүгнэлт:** гурван мутант бүгд баригдсан (BUILD FAILURE), үл баригдсан мутант байхгүй. Мутант 3-ыг A6 шууд барьсан: A6 нь `studentId`, `courseId` хоёр аргументын null-ийг тус тусад нь шалгадаг тул тестэд нэмэлт засвар хийх шаардлагагүй болсон. Бүх Failures нь assertion/verify-ийн алдаа бөгөөд UnnecessaryStubbingException (Errors) гараагүй.
+Гурван мутант бүгд тестээр баригдаж, мутацийн гаралтын файл бүрт `BUILD FAILURE` болсон байна. Мутант 3-ыг A6 барьсан: `studentId` болон `courseId`-г тус тус `null` болгосон хоёр оролтыг хоёуланг нь шалгадаг.
 
-Эх код бүх мутацийн дараа сэргээгдсэн. Эцсийн `results/mvn-test.txt`: Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, BUILD SUCCESS.
+## Дүгнэлт
+
+Mockito mock нь сангийн интерфейс шиг бодит хамаарлын оронд тестийн үед ашиглагдаж, программчилсан хариу буцаах болон дуудлагыг бүртгэх боломжтой объект юм. Fake нь мөн бодит хамаарлыг орлодог боловч ихэвчлэн тестэд хэрэглэх хялбаршуулсан бодит ажиллагаатай хэрэгжүүлэлт байдаг. Энэ лабораторид өгөгдлийн сан болон и-мэйл илгээгчийг mock болгосноор үйлчилгээний бизнес логикийг гадаад системгүйгээр тусгаарлан шалгав. Хэрэгжүүлж буй бизнес дүрмийн өөрийнх нь үр дүнг тестлэх үед mock хэрэглэхээс зайлсхийж, боломжтой бол бодит жижиг объект ашиглах нь зохистой. Мөн энгийн утгын объект болон тестийн байнга өөрчлөгдөхгүй тогтвортой хамаарлыг шаардлагагүйгээр mock хийх нь тестийг хэт хиймэл болгож болно. `verify`-г хэтрүүлэн хэрэглэвэл тест хэрэглэгчид харагдах үр дүнгээс илүү дотоод хэрэгжүүлэлтийн дуудлагын дараалал, тоонд уягдана. Ингэснээр логик зөв хэвээр байсан ч хэрэгжүүлэлтийг цэгцлэх, өөрчлөхөд олон тест нурж, засвар үйлчилгээний зардал нэмэгдэх эрсдэлтэй.
